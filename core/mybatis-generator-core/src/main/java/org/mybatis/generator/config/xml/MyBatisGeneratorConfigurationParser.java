@@ -81,13 +81,16 @@ public class MyBatisGeneratorConfigurationParser {
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node childNode = nodeList.item(i);
 
+            /*跳过非element节点*/
             if (childNode.getNodeType() != Node.ELEMENT_NODE) {
                 continue;
             }
 
+            /*支持以下三个element*/
             if ("properties".equals(childNode.getNodeName())) { //$NON-NLS-1$
                 parseProperties(childNode);
             } else if ("classPathEntry".equals(childNode.getNodeName())) { //$NON-NLS-1$
+            	/*classPathEntry节点解析*/
                 parseClassPathEntry(configuration, childNode);
             } else if ("context".equals(childNode.getNodeName())) { //$NON-NLS-1$
                 parseContext(configuration, childNode);
@@ -669,6 +672,7 @@ public class MyBatisGeneratorConfigurationParser {
         }
     }
 
+    /*处理classPathEntry节点*/
     protected void parseClassPathEntry(Configuration configuration, Node node) {
         Properties attributes = parseAttributes(node);
 

@@ -48,6 +48,7 @@ public class ConfigurationParser {
     private final Properties extraProperties;
 
     public ConfigurationParser(List<String> warnings) {
+    	/*给定warnings列表，初始化parser*/
         this(null, warnings);
     }
 
@@ -87,6 +88,7 @@ public class ConfigurationParser {
     public Configuration parseConfiguration(File inputFile) throws IOException,
             XMLParserException {
 
+    	/*读取配置文件，解析为Configuration*/
         FileReader fr = new FileReader(inputFile);
 
         return parseConfiguration(fr);
@@ -127,6 +129,7 @@ public class ConfigurationParser {
 
             Document document = null;
             try {
+            	/*解析xml获得document*/
                 document = builder.parse(inputSource);
             } catch (SAXParseException e) {
                 throw new XMLParserException(parseErrors);
@@ -148,6 +151,7 @@ public class ConfigurationParser {
             if (rootNode.getNodeType() == Node.ELEMENT_NODE
                     && docType.getPublicId().equals(
                             XmlConstants.MYBATIS_GENERATOR_CONFIG_PUBLIC_ID)) {
+            	/*解析根节点*/
                 config = parseMyBatisGeneratorConfiguration(rootNode);
             } else {
                 throw new XMLParserException(getString("RuntimeError.5")); //$NON-NLS-1$
