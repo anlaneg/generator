@@ -35,10 +35,12 @@ public class Configuration {
         classPathEntries = new ArrayList<>();
     }
 
+	/*增加配置的classpath*/
     public void addClasspathEntry(String entry) {
         classPathEntries.add(entry);
     }
 
+	/*返回设置的classpath*/
     public List<String> getClassPathEntries() {
         return classPathEntries;
     }
@@ -54,6 +56,7 @@ public class Configuration {
     public void validate() throws InvalidConfigurationException {
         List<String> errors = new ArrayList<>();
 
+		/*classpath配置校验*/
         for (String classPathEntry : classPathEntries) {
             if (!stringHasValue(classPathEntry)) {
                 errors.add(getString("ValidationError.19")); //$NON-NLS-1$
@@ -65,6 +68,7 @@ public class Configuration {
         if (contexts.isEmpty()) {
             errors.add(getString("ValidationError.11")); //$NON-NLS-1$
         } else {
+			/*遍历多个context进行校验*/
             for (Context context : contexts) {
                 context.validate(errors);
             }

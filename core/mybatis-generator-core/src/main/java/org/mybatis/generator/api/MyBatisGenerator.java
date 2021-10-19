@@ -95,10 +95,12 @@ public class MyBatisGenerator {
         if (configuration == null) {
             throw new IllegalArgumentException(getString("RuntimeError.2")); //$NON-NLS-1$
         } else {
+			/*设置配置情况*/
             this.configuration = configuration;
         }
 
         if (shellCallback == null) {
+			/*构造默认shell callback*/
             this.shellCallback = new DefaultShellCallback(false);
         } else {
             this.shellCallback = shellCallback;
@@ -110,6 +112,7 @@ public class MyBatisGenerator {
             this.warnings = warnings;
         }
 
+		/*执行配置校验*/
         this.configuration.validate();
     }
 
@@ -216,6 +219,7 @@ public class MyBatisGenerator {
             callback = NULL_PROGRESS_CALLBACK;
         }
 
+		/*上下文清空*/
         generatedJavaFiles.clear();
         generatedXmlFiles.clear();
         ObjectFactory.reset();
@@ -260,6 +264,7 @@ public class MyBatisGenerator {
         callback.generationStarted(totalSteps);
 
         for (Context context : contextsToRun) {
+			/*调用各context完成文件内容生成*/
             context.generateFiles(callback, generatedJavaFiles,
                     generatedXmlFiles, generatedKotlinFiles, warnings);
         }

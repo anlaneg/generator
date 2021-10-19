@@ -72,6 +72,7 @@ public class MyBatisGeneratorConfigurationParser {
         configurationProperties = new Properties();
     }
 
+	/*配置节点解析*/
     public Configuration parseConfiguration(Element rootNode)
             throws XMLParserException {
 
@@ -93,10 +94,12 @@ public class MyBatisGeneratorConfigurationParser {
             	/*classPathEntry节点解析*/
                 parseClassPathEntry(configuration, childNode);
             } else if ("context".equals(childNode.getNodeName())) { //$NON-NLS-1$
+				/*解析context节点*/
                 parseContext(configuration, childNode);
             }
         }
 
+		/*返回解析的配置信息*/
         return configuration;
     }
 
@@ -145,6 +148,7 @@ public class MyBatisGeneratorConfigurationParser {
         }
     }
 
+	/*完成context节点属性解析*/
     private void parseContext(Configuration configuration, Node node) {
 
         Properties attributes = parseAttributes(node);
@@ -154,6 +158,7 @@ public class MyBatisGeneratorConfigurationParser {
                 .getProperty("introspectedColumnImpl"); //$NON-NLS-1$
         String id = attributes.getProperty("id"); //$NON-NLS-1$
 
+		/*如果未指定modelType,则使用null*/
         ModelType mt = defaultModelType == null ? null : ModelType
                 .getModelType(defaultModelType);
 
@@ -163,11 +168,13 @@ public class MyBatisGeneratorConfigurationParser {
             context.setIntrospectedColumnImpl(introspectedColumnImpl);
         }
         if (stringHasValue(targetRuntime)) {
+			/*设置targetRuntime*/
             context.setTargetRuntime(targetRuntime);
         }
 
         configuration.addContext(context);
 
+		/*遍历context节点的成员节点*/
         NodeList nodeList = node.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node childNode = nodeList.item(i);
@@ -181,20 +188,27 @@ public class MyBatisGeneratorConfigurationParser {
             } else if ("plugin".equals(childNode.getNodeName())) { //$NON-NLS-1$
                 parsePlugin(context, childNode);
             } else if ("commentGenerator".equals(childNode.getNodeName())) { //$NON-NLS-1$
+				/*解析commentGenerator节点*/
                 parseCommentGenerator(context, childNode);
             } else if ("jdbcConnection".equals(childNode.getNodeName())) { //$NON-NLS-1$
+				/*解析jdbcconnection节点*/
                 parseJdbcConnection(context, childNode);
             } else if ("connectionFactory".equals(childNode.getNodeName())) { //$NON-NLS-1$
                 parseConnectionFactory(context, childNode);
             } else if ("javaModelGenerator".equals(childNode.getNodeName())) { //$NON-NLS-1$
+				/*实体类生成的位置*/
                 parseJavaModelGenerator(context, childNode);
             } else if ("javaTypeResolver".equals(childNode.getNodeName())) { //$NON-NLS-1$
+				/*javaTypeResolver节点解析*/
                 parseJavaTypeResolver(context, childNode);
             } else if ("sqlMapGenerator".equals(childNode.getNodeName())) { //$NON-NLS-1$
+				/*Mapper.xml 文件的位置*/
                 parseSqlMapGenerator(context, childNode);
             } else if ("javaClientGenerator".equals(childNode.getNodeName())) { //$NON-NLS-1$
+				/*Mapper 接口文件的位置*/
                 parseJavaClientGenerator(context, childNode);
             } else if ("table".equals(childNode.getNodeName())) { //$NON-NLS-1$
+				/*解析table节点*/
                 parseTable(context, childNode);
             }
         }
@@ -242,11 +256,13 @@ public class MyBatisGeneratorConfigurationParser {
             tc.setSchema(schema);
         }
 
+		/*table名称*/
         String tableName = attributes.getProperty("tableName"); //$NON-NLS-1$
         if (stringHasValue(tableName)) {
             tc.setTableName(tableName);
         }
 
+		/*为domain映射的名称*/
         String domainObjectName = attributes.getProperty("domainObjectName"); //$NON-NLS-1$
         if (stringHasValue(domainObjectName)) {
             tc.setDomainObjectName(domainObjectName);
@@ -543,6 +559,7 @@ public class MyBatisGeneratorConfigurationParser {
             javaTypeResolverConfiguration.setConfigurationType(type);
         }
 
+		/*属性添加*/
         NodeList nodeList = node.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node childNode = nodeList.item(i);
@@ -642,22 +659,27 @@ public class MyBatisGeneratorConfigurationParser {
         context.setJdbcConnectionConfiguration(jdbcConnectionConfiguration);
 
         Properties attributes = parseAttributes(node);
+		/*采用哪种driver*/
         String driverClass = attributes.getProperty("driverClass"); //$NON-NLS-1$
+		/*采用哪种url进行连接*/
         String connectionURL = attributes.getProperty("connectionURL"); //$NON-NLS-1$
 
         jdbcConnectionConfiguration.setDriverClass(driverClass);
         jdbcConnectionConfiguration.setConnectionURL(connectionURL);
 
+		/*用户id*/
         String userId = attributes.getProperty("userId"); //$NON-NLS-1$
         if (stringHasValue(userId)) {
             jdbcConnectionConfiguration.setUserId(userId);
         }
 
+		/*数据库密码*/
         String password = attributes.getProperty("password"); //$NON-NLS-1$
         if (stringHasValue(password)) {
             jdbcConnectionConfiguration.setPassword(password);
         }
 
+		/*成员属性解析及添加*/
         NodeList nodeList = node.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node childNode = nodeList.item(i);
@@ -676,9 +698,11 @@ public class MyBatisGeneratorConfigurationParser {
     protected void parseClassPathEntry(Configuration configuration, Node node) {
         Properties attributes = parseAttributes(node);
 
+		/*这个节点只关心location属性,设置其对应的classpath*/
         configuration.addClasspathEntry(attributes.getProperty("location")); //$NON-NLS-1$
     }
 
+	/*解析node的属性，并将属性中的name,value填充到propertyHolder中*/
     protected void parseProperty(PropertyHolder propertyHolder, Node node) {
         Properties attributes = parseAttributes(node);
 
@@ -690,10 +714,13 @@ public class MyBatisGeneratorConfigurationParser {
 
     protected Properties parseAttributes(Node node) {
         Properties attributes = new Properties();
+		/*取此节点上所有属性*/
         NamedNodeMap nnm = node.getAttributes();
         for (int i = 0; i < nnm.getLength(); i++) {
             Node attribute = nnm.item(i);
+			/*属性中如果有marker，则解析它*/
             String value = parsePropertyTokens(attribute.getNodeValue());
+			/*记录每个属性名及其对应的值*/
             attributes.put(attribute.getNodeName(), value);
         }
 
@@ -709,6 +736,7 @@ public class MyBatisGeneratorConfigurationParser {
 
         int markerStartIndex = s.indexOf(OPEN);
         if (markerStartIndex < 0) {
+			/*s中没有参数,将其直接加入到answer中*/
             // no parameter markers
             answer.add(s);
             currentIndex = s.length();
@@ -721,6 +749,7 @@ public class MyBatisGeneratorConfigurationParser {
                 currentIndex = markerStartIndex;
             }
 
+			/*确定参数结束位置*/
             int markerEndIndex = s.indexOf(CLOSE, currentIndex);
             int nestedStartIndex = s.indexOf(OPEN, markerStartIndex + OPEN.length());
             while (nestedStartIndex > -1 && markerEndIndex > -1 && nestedStartIndex < markerEndIndex) {
@@ -737,11 +766,13 @@ public class MyBatisGeneratorConfigurationParser {
 
             // we have a valid property marker...
             String property = s.substring(markerStartIndex + OPEN.length(), markerEndIndex);
+			/*递归解释属性*/
             String propertyValue = resolveProperty(parsePropertyTokens(property));
             if (propertyValue == null) {
                 // add the property marker back into the stream
                 answer.add(s.substring(markerStartIndex, markerEndIndex + 1));
             } else {
+				/*对marker解析成功，添加其返回值*/
                 answer.add(propertyValue);
             }
 
@@ -753,6 +784,7 @@ public class MyBatisGeneratorConfigurationParser {
             answer.add(s.substring(currentIndex));
         }
 
+		/*返回解析marker后的结果*/
         return String.join("", answer);
     }
 
@@ -768,6 +800,7 @@ public class MyBatisGeneratorConfigurationParser {
             commentGeneratorConfiguration.setConfigurationType(type);
         }
 
+		/*CommentGenerator子节点解析*/
         NodeList nodeList = node.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node childNode = nodeList.item(i);
@@ -776,6 +809,7 @@ public class MyBatisGeneratorConfigurationParser {
                 continue;
             }
 
+			/*向commentGeneratorConfiguration属性添加*/
             if ("property".equals(childNode.getNodeName())) { //$NON-NLS-1$
                 parseProperty(commentGeneratorConfiguration, childNode);
             }
@@ -821,13 +855,16 @@ public class MyBatisGeneratorConfigurationParser {
      *     undefined in any of the sources.
      */
     private String resolveProperty(String key) {
+		/*先在system中查找此属性*/
         String property = System.getProperty(key);
 
         if (property == null) {
+			/*在configuration中查找此属性*/
             property = configurationProperties.getProperty(key);
         }
 
         if (property == null) {
+			/*在额外中查找此属性*/
             property = extraProperties.getProperty(key);
         }
 

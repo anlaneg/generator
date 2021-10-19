@@ -104,6 +104,7 @@ public class ShellRunner {
 
         try {
             ConfigurationParser cp = new ConfigurationParser(warnings);
+			/*解析配置文件，获得config*/
             Configuration config = cp.parseConfiguration(configurationFile);
 
             DefaultShellCallback shellCallback = new DefaultShellCallback(
